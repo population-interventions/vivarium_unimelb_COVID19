@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: vivarium-unimelb-COVID19
+Version: 1.0.0
+Summary: Research repository for the vivarium_unimelb_COVID19 project.
+Home-page: UNKNOWN
+Author: Patrick Andersen
+Author-email: andersenp@unimelb.edu.au
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Provides-Extra: test
+Provides-Extra: extra

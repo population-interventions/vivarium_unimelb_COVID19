@@ -1,0 +1,34 @@
+components:
+    vivarium_unimelb_COVID19:
+        population:
+            - BasePopulation()
+            - Mortality()
+            - Disability()
+        #epidemic:
+        #    - Epidemic('COVID19')
+        observer:
+            - MorbidityMortality()
+
+configuration:
+    input_data:
+        artifact_path: C:\Users\andersenp\OneDrive - The University of Melbourne\Documents\Python_CEB\COVID_Vivarium\vivarium_unimelb_COVID19/artifacts/new_zealand.hdf
+        input_draw_number: 0
+    interpolation:
+        validate: False
+    observer:
+        output_prefix: results/COVID19_new_zealand
+    population:
+        # The population size here is the number of cohorts.
+        # There are 22 age bins (0-4, 5-9, ..., 105-109) for females and for
+        # males, making a total of 44 cohorts.
+        population_size: 44
+    time:
+        start:
+            day: 1
+            month: 1
+            year: 2020
+        end:
+            day: 31
+            month: 12
+            year: 2030
+        step_size: 30  # In days
