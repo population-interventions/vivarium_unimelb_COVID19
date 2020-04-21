@@ -4,7 +4,7 @@ components:
             - BasePopulation()
             - Mortality()
             - Disability()
-            - MortalityEffects('GDP')
+            #- MortalityEffects('GDP')
         epidemic:
             - Epidemic('COVID19')
         observer:
@@ -17,6 +17,9 @@ configuration:
         input_draw_number: 0
     interpolation:
         validate: False
+    epidemic:
+        fatality:
+            estimate: Verity 
     observer:
         output_prefix: results/COVID19_new_zealand_test
     population:

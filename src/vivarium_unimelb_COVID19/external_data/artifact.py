@@ -116,8 +116,11 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         write_table(art, 'COVID19.infection_prop',
                         epi.get_infection_proportion())
 
-        write_table(art, 'COVID19.fatality_risk',
-                        epi.get_fatality_risk())
+        write_table(art, 'COVID19.fatality_risk.Verity',
+                        epi.get_fatality_risk('Verity'))
+
+        write_table(art, 'COVID19.fatality_risk.Blakely',
+                        epi.get_fatality_risk('Blakely'))
 
 
         print(pop_artifact_file)
@@ -145,7 +148,7 @@ def write_table(artifact, path, data):
     data.set_index([col_name for col_name in data.columns if col_name in col_index_filters], inplace =True)
     
     #Convert wide to long
-    if 'value' not in data.columns:
+    if ('value' not in data.columns) and ('draw_0' not in data.columns):
         data = (pd.melt(data.reset_index(), id_vars=data.index.names,var_name = 'measure')
                 .set_index(data.index.names+['measure']))
 

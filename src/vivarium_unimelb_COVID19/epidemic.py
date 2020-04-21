@@ -49,7 +49,9 @@ class Epidemic:
 
 
     def load_fatality_data(self, builder):
-        fatality_data = builder.data.load(f'{self.name}.fatality_risk')
+        estimate_name = builder.configuration.epidemic.fatality.estimate
+        fatality_data = builder.data.load('{}.fatality_risk.{}'.format(self.name, estimate_name))
+        print(fatality_data)
         fatality_table = builder.lookup.build_table(fatality_data, 
                                                     key_columns=['sex'],
                                                     parameter_columns=['age'])
