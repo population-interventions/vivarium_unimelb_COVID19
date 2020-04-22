@@ -190,8 +190,10 @@ class MortalityEffects:
 
         #Scale mort_rate from annual to timestep
         old_rate = mort_rate * self.years_per_timestep
+        print(old_rate)
         #Add mort delta
         new_rate = old_rate + mort_delta
+        print(new_rate)
         #Scale new_rate from timestep to annual
         new_rate = new_rate / self.years_per_timestep
 

@@ -11,7 +11,9 @@ from vivarium.framework.artifact import Artifact
 from vivarium_unimelb_COVID19.external_data.population import Population
 from vivarium_unimelb_COVID19.external_data.epidemic import Epidemic
 from vivarium_unimelb_COVID19.external_data.mortality_effects import GDP
-from vivarium_unimelb_COVID19.external_data.uncertainty import LogNormal
+from vivarium_unimelb_COVID19.external_data.disease import Diseases
+from vivarium_unimelb_COVID19.external_data.disease_modifier import Disease_modifier
+from vivarium_unimelb_COVID19.external_data.uncertainty import Normal, LogNormal
 
 #YEAR_START = 2011
 YEAR_START = 2017
@@ -19,6 +21,7 @@ RANDOM_SEED = 49430
 
 POPULATIONS = ['new_zealand_test']
 #POPULATIONS = ['australia','new_zealand','sweden']
+#DISEASES = ['RTC', 'Suicide']
 
 
 def check_for_bin_edges(df):
@@ -63,6 +66,8 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         pop = Population(data_dir, YEAR_START)
         epi = Epidemic(data_dir, YEAR_START)
         gdp = GDP(data_dir, YEAR_START)
+        dis = Diseases(data_dir, YEAR_START, pop.year_end)
+        unempl = Disease_modifier(data_dir, YEAR_START, 'unemployment')
 
         # Define data structures to record the samples from the unit interval that
         # are used to sample each rate/quantity.
@@ -71,9 +76,18 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         # Define the sampling distributions in terms of their family and their
         # *relative* standard deviation.
         dist_yld = LogNormal(sd_pcnt=10)
+        dist_acute_f = Normal(sd_pcnt=10)
+        dist_acute_yld = Normal(sd_pcnt=10)
+        smp_acute_f = {}
+        smp_acute_yld = {}
         
         logger.info('{} Generating samples'.format(
             datetime.datetime.now().strftime("%H:%M:%S")))
+
+        for name, disease in dis.acute.items():
+            # Draw samples for each rate/quantity for this disease.
+            smp_acute_f[name] = prng.random_sample(num_draws)
+            smp_acute_yld[name] = prng.random_sample(num_draws)
 
         # Now write all of the required tables:
         pop_artifact_fmt = '{}.hdf'.format(population)
@@ -121,6 +135,30 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
 
         write_table(art, 'COVID19.fatality_risk.Blakely',
                         epi.get_fatality_risk('Blakely'))
+
+        # Write the acute disease tables.
+        for name, disease in dis.acute.items():
+            logger.info('{} Writing tables for {}'.format(
+                datetime.datetime.now().strftime("%H:%M:%S"), name))
+
+            write_table(art, 'acute_disease.{}.mortality'.format(name),
+                         disease.sample_excess_mortality_from(
+                             dist_acute_f, smp_acute_f[name]))
+            
+            write_table(art, 'acute_disease.{}.morbidity'.format(name),
+                         disease.sample_disability_from(
+                             dist_acute_yld, smp_acute_yld[name]))
+
+        # Write disease modifier tables.
+        logger.info('{} Writing disease modifier tables'.format(
+                datetime.datetime.now().strftime("%H:%M:%S")))
+        for name, disease in dis.acute.items():
+            
+            write_table(art, 'acute_disease.{}.mortality_modifier_unemployment'.format(name),
+                            unempl.get_disease_mortality(name))
+
+            write_table(art, 'acute_disease.{}.disability_modifier_unemployment'.format(name),
+                            unempl.get_disease_disability(name))
 
 
         print(pop_artifact_file)
