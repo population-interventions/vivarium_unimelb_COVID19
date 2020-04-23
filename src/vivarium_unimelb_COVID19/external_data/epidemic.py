@@ -21,27 +21,73 @@ def get_dataframe(filename):
 class Epidemic:
 
     def __init__(self, data_dir, year_start):
-        infection_data_file = '{}/COVID_infection.csv'.format(data_dir)
+        self.year_start = year_start
+        #infection_data_file = '{}/COVID_infection.csv'.format(data_dir)
+        infection_data_file = '{}/percent_infected.csv'.format(data_dir)
         infection_df = get_dataframe(infection_data_file)
         #fatality_data_file = '{}/COVID_fatality.csv'.format(data_dir)
-        fatality_data_file = '{}/infection_fatality.csv'.format(data_dir)
+        #fatality_data_file = '{}/infection_fatality.csv'.format(data_dir)
+
+        fatality_data_file = '{}/dead_table.csv'.format(data_dir)
         fatality_df = get_dataframe(fatality_data_file)
+
+        disability_data_file = '{}/dr_table.csv'.format(data_dir)
+        disability_df = get_dataframe(fatality_data_file)
 
         self._infection_data = infection_df
         self._fatality_data = fatality_df
+        self._disability_data = disability_df
 
 
-    def get_infection_proportion(self):
+    def get_infection_proportion(self, scenario):
         """Return the proportion of infected for each age stratum."""
-        return self._infection_data
 
-    def get_fatality_risk(self, estimate_name):
-        """Return the fatality risk for each age stratum.
-        estimate_name \in {'Verity', 'Blakely'}"""
-        index_cols = ['age_start', 'age_end', 'sex']
+        df = self._infection_data.loc[self._infection_data['scenario'] == scenario]
+
+        #Convert relative year columns to absolute years
+        df = df.rename(columns={'time_start': 'year_start', 'time_end': 'year_end'})
+        df['year_start'] += self.year_start
+        df['year_end'] += self.year_start
+
+        index_cols = ['age_start', 'age_end', 'year_start', 'year_end', 'sex']
         draw_cols = ['draw_{}'.format(i) for i in range(DRAW_NUM)]
-        cols = index_cols + draw_cols
 
-        df = self._fatality_data.loc[self._fatality_data['estimate_name'] == estimate_name]
+        cols = cols = index_cols + draw_cols
+
+        return df[cols]
+
+
+    def get_fatality_risk(self, scenario):
+        """Return the fatality risk for each age stratum."""
+
+        df = self._fatality_data.loc[self._fatality_data['scenario'] == scenario]
+
+        #Convert relative year columns to absolute years
+        df = df.rename(columns={'time_start': 'year_start', 'time_end': 'year_end'})
+        df['year_start'] += self.year_start
+        df['year_end'] += self.year_start
+
+        index_cols = ['age_start', 'age_end', 'year_start', 'year_end', 'sex']
+        draw_cols = ['draw_{}'.format(i) for i in range(DRAW_NUM)]
+
+        cols = cols = index_cols + draw_cols
+
+        return df[cols]
+
+
+    def get_disability_risk(self, scenario):
+        """Return the disability risk for each age stratum."""
+
+        df = self._disability_data.loc[self._disability_data['scenario'] == scenario]
+
+        #Convert relative year columns to absolute years
+        df = df.rename(columns={'time_start': 'year_start', 'time_end': 'year_end'})
+        df['year_start'] += self.year_start
+        df['year_end'] += self.year_start
+
+        index_cols = ['age_start', 'age_end', 'year_start', 'year_end', 'sex']
+        draw_cols = ['draw_{}'.format(i) for i in range(DRAW_NUM)]
+
+        cols = cols = index_cols + draw_cols
 
         return df[cols]

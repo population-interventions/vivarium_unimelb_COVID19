@@ -10,9 +10,9 @@ components:
             - Mortality()
             - Disability()
             #- MortalityEffects('GDP')
-        disease_modifiers:
-            - AcuteDiseaseModifier('RTC', 'unemployment')
-            - AcuteDiseaseModifier('Suicide', 'unemployment')
+        #disease_modifiers:
+        #    - AcuteDiseaseModifier('RTC', 'unemployment')
+        #    - AcuteDiseaseModifier('Suicide', 'unemployment')
         epidemic:
             - Epidemic('COVID19')
         observer:
@@ -25,9 +25,9 @@ configuration:
         input_draw_number: 0
     interpolation:
         validate: False
-    epidemic:
-        fatality:
-            estimate: Verity 
+    #epidemic:
+    #    fatality:
+    #        estimate: Verity 
     observer:
         output_prefix: results/COVID19_new_zealand_test
     population:
@@ -35,6 +35,7 @@ configuration:
         # There are 22 age bins (0-4, 5-9, ..., 105-109) for females and for
         # males, making a total of 44 cohorts.
         population_size: 44
+    scenario: flatten
     time:
         start:
             day: 1

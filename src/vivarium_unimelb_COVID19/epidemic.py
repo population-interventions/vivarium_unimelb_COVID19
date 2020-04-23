@@ -28,40 +28,54 @@ class Epidemic:
 
     def setup(self, builder):
         self.years_per_timestep = builder.configuration.time.step_size/365
+        self.scenario = builder.configuration.scenario
 
         self.load_infection_data(builder)
         self.load_fatality_data(builder)
+        self.load_disability_data(builder)
         self.load_population_view(builder)
         self.register_mortality_modifier(builder)
+        self.register_morbidity_modifier(builder)
 
         builder.event.register_listener('time_step__prepare',
                                         self.on_time_step_prepare)
 
 
     def load_infection_data(self, builder):
-        infection_data = builder.data.load(f'{self.name}.infection_prop')
+        infection_data = builder.data.load('{}.infection_prop.{}'.format(self.name, self.scenario))
         infection_table = builder.lookup.build_table(infection_data, 
                                                      key_columns=['sex'],
-                                                     parameter_columns=['age','year'])
+                                                     parameter_columns=['age', 'year'])
 
         self.infection_prop = builder.value.register_value_producer(f'{self.name}.infection_prop',
                                                                     source=infection_table)
 
 
     def load_fatality_data(self, builder):
-        estimate_name = builder.configuration.epidemic.fatality.estimate
-        fatality_data = builder.data.load('{}.fatality_risk.{}'.format(self.name, estimate_name))
+        fatality_data = builder.data.load('{}.fatality_risk.{}'.format(self.name, self.scenario))
         fatality_table = builder.lookup.build_table(fatality_data, 
                                                     key_columns=['sex'],
-                                                    parameter_columns=['age'])
+                                                    parameter_columns=['age', 'year'])
 
         self.fatality_risk = builder.value.register_value_producer(f'{self.name}.fatality_risk',
                                                                    source=fatality_table)
 
 
+    def load_disability_data(self, builder):
+        disability_data = builder.data.load('{}.disability_risk.{}'.format(self.name, self.scenario))
+        disability_table = builder.lookup.build_table(disability_data, 
+                                                      key_columns=['sex'],
+                                                      parameter_columns=['age', 'year'])
+
+        self.disability_risk = builder.value.register_value_producer(f'{self.name}.disability_risk',
+                                                                     source=disability_table)                                                               
+
+
     def load_population_view(self, builder):
         required_pop_columns = ['age', 'sex', 'population']
-        self.new_pop_columns = [f'{self.name}_mort_risk',
+        self.new_pop_columns = [f'{self.name}_infected_num',
+                                f'{self.name}_mort_risk',
+                                f'{self.name}_disability_loss',
                                 f'{self.name}_deaths',
                                 f'{self.name}_infection_risk',
                                 f'{self.name}_fatality_risk',                        
@@ -94,12 +108,17 @@ class Epidemic:
         idx = pop.index
         infection_risk = self.infection_prop(idx)
         fatality_risk = self.fatality_risk(idx)
+        disability_risk = self.disability_risk(idx)
 
         pop_num = pop['population']
         infected_num = pop_num * infection_risk
         deaths = infected_num * fatality_risk
- 
-        pop[f'{self.name}_mort_risk'] = deaths/pop_num
+        disability_loss = infection_risk * disability_risk
+        mort_risk = deaths/pop_num
+
+        pop[f'{self.name}_infected_num'] = infected_num
+        pop[f'{self.name}_mort_risk'] = mort_risk
+        pop[f'{self.name}_disability_loss'] = disability_loss
         pop[f'{self.name}_deaths'] = deaths
         pop[f'{self.name}_infection_risk'] = infection_risk
         pop[f'{self.name}_fatality_risk'] = fatality_risk
@@ -110,6 +129,12 @@ class Epidemic:
     def register_mortality_modifier(self, builder):
         rate_name = 'mortality_rate'
         modifier = lambda ix, mort_rate: self.mortality_rate_adjustment(ix, mort_rate)
+        builder.value.register_value_modifier(rate_name, modifier)
+
+
+    def register_morbidity_modifier(self, builder):
+        rate_name = 'yld_rate'
+        modifier = lambda ix, yld_rate: self.yld_rate_adjustment(ix, yld_rate)
         builder.value.register_value_modifier(rate_name, modifier)
 
 
@@ -128,5 +153,16 @@ class Epidemic:
         new_rate = np.log(1 / (1 - new_mort_risk))
         #Scale new_rate from timestep to annual
         new_rate = new_rate / self.years_per_timestep
+
+        return new_rate
+
+    
+    def yld_rate_adjustment(self, index, yld_rate):
+        pop = self.population_view.get(index)
+
+        disability_loss = pop[f'{self.name}_disability_loss']
+        #Scale disability loss for timestep to yld
+        yld_delta = disability_loss * self.years_per_timestep
+        new_rate = yld_rate + yld_delta
 
         return new_rate

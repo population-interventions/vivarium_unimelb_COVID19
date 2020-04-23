@@ -16,12 +16,14 @@ from vivarium_unimelb_COVID19.external_data.disease_modifier import Disease_modi
 from vivarium_unimelb_COVID19.external_data.uncertainty import Normal, LogNormal
 
 #YEAR_START = 2011
-YEAR_START = 2017
+BASE_LIFETABLE_YEAR_START = 2017
+SIMULATION_YEAR_START = 2020
 RANDOM_SEED = 49430
 
 POPULATIONS = ['new_zealand_test']
 #POPULATIONS = ['australia','new_zealand','sweden']
 #DISEASES = ['RTC', 'Suicide']
+SCENARIOS = ['elimination', 'flatten', 'suppress']
 
 
 def check_for_bin_edges(df):
@@ -63,11 +65,11 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         data_dir = get_data_dir(population)
 
         # Instantiate components for the population.
-        pop = Population(data_dir, YEAR_START)
-        epi = Epidemic(data_dir, YEAR_START)
-        gdp = GDP(data_dir, YEAR_START)
-        dis = Diseases(data_dir, YEAR_START, pop.year_end)
-        unempl = Disease_modifier(data_dir, YEAR_START, 'unemployment')
+        pop = Population(data_dir, BASE_LIFETABLE_YEAR_START)
+        epi = Epidemic(data_dir, SIMULATION_YEAR_START)
+        gdp = GDP(data_dir, SIMULATION_YEAR_START)
+        dis = Diseases(data_dir,  BASE_LIFETABLE_YEAR_START, pop.year_end)
+        unempl = Disease_modifier(data_dir, SIMULATION_YEAR_START, 'unemployment')
 
         # Define data structures to record the samples from the unit interval that
         # are used to sample each rate/quantity.
@@ -117,24 +119,25 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
                         pop.get_mortality_rate())
 
         # Write the mortality effect tables.
-        logger.info('{} Writing mortality effect tables'.format(
-            datetime.datetime.now().strftime("%H:%M:%S")))
-
-        write_table(art, 'mortality_effects.GDP',
-                        gdp.get_GDP_effects())
+        #logger.info('{} Writing mortality effect tables'.format(
+        #    datetime.datetime.now().strftime("%H:%M:%S")))
+        #
+        #write_table(art, 'mortality_effects.GDP',
+        #                gdp.get_GDP_effects())
 
         # Write epidemic tables.
         logger.info('{} Writing epidemic tables'.format(
             datetime.datetime.now().strftime("%H:%M:%S")))
 
-        write_table(art, 'COVID19.infection_prop',
-                        epi.get_infection_proportion())
+        for scenario in SCENARIOS:
+            write_table(art, 'COVID19.infection_prop.{}'.format(scenario),
+                        epi.get_infection_proportion(scenario))
+        
+            write_table(art, 'COVID19.fatality_risk.{}'.format(scenario),
+                        epi.get_fatality_risk(scenario))
 
-        write_table(art, 'COVID19.fatality_risk.Verity',
-                        epi.get_fatality_risk('Verity'))
-
-        write_table(art, 'COVID19.fatality_risk.Blakely',
-                        epi.get_fatality_risk('Blakely'))
+            write_table(art, 'COVID19.disability_risk.{}'.format(scenario),
+                        epi.get_disability_risk(scenario))
 
         # Write the acute disease tables.
         for name, disease in dis.acute.items():
