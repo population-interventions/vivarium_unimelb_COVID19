@@ -113,7 +113,7 @@ class Epidemic:
         pop_num = pop['population']
         infected_num = pop_num * infection_risk
         deaths = infected_num * fatality_risk
-        disability_loss = infection_risk * disability_risk
+        disability_loss = disability_risk
         mort_risk = deaths/pop_num
 
         pop[f'{self.name}_infected_num'] = infected_num
