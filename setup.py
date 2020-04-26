@@ -77,6 +77,7 @@ if __name__ == "__main__":
             [console_scripts]
             make_artifacts=vivarium_unimelb_COVID19.cli:make_artifacts
             make_model_specifications=vivarium_unimelb_COVID19.cli:make_model_specifications
+            run_uncertainty_analysis=vivarium_unimelb_COVID19.cli:run_uncertainty_analysis
         """,
 
 
