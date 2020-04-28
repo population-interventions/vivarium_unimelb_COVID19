@@ -158,10 +158,10 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         for name, disease in dis.acute.items():
             
             write_table(art, 'acute_disease.{}.mortality_modifier_unemployment'.format(name),
-                            unempl.get_disease_mortality(name))
+                            unempl.get_disease_rate_scalar(name, 'mortality'))
 
             write_table(art, 'acute_disease.{}.disability_modifier_unemployment'.format(name),
-                            unempl.get_disease_disability(name))
+                            unempl.get_disease_rate_scalar(name, 'disability'))
 
 
         print(pop_artifact_file)

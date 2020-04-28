@@ -46,3 +46,13 @@ class Disease_modifier:
 
         return df
 
+    def get_disease_rate_scalar(self, disease_name, rate_name):
+        """Return the effects of a single rate for a single disease for each age stratum."""
+        df = self._data.loc[(self._data['disease'] == disease_name) &
+                            (self._data['rate'] == rate_name)]
+        
+        return df
+
+                
+
+
