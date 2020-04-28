@@ -129,7 +129,7 @@ class Epidemic:
         deaths = infected_num * fatality_risk
         disability_loss = disability_risk
         mort_risk = deaths/pop_num
-        total_cost = health_cost * pop_num
+        total_cost = health_cost
 
         pop[f'{self.name}_cost'] = total_cost
         pop[f'{self.name}_infected_num'] = infected_num
