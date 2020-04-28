@@ -113,10 +113,12 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
 
         write_table(art, 'population.structure',
                         pop.get_population())
-        write_table(art, 'cause.all_causes.disability_rate',
-                        pop.sample_disability_rate_from(dist_yld, smp_yld))
         write_table(art, 'cause.all_causes.mortality',
                         pop.get_mortality_rate())
+        write_table(art, 'cause.all_causes.disability_rate',
+                        pop.get_disability_rate())
+        #write_table(art, 'population.expenditure',
+        #                pop.get_expenditure())
 
         # Write the mortality effect tables.
         #logger.info('{} Writing mortality effect tables'.format(
