@@ -161,8 +161,10 @@ class Epidemic:
         pop = self.population_view.get(index)
 
         disability_loss = pop[f'{self.name}_disability_loss']
-        #Scale disability loss for timestep to yld
-        yld_delta = disability_loss * self.years_per_timestep
+        #Scale disability loss for timestep to year
+        disability_loss_scaled = disability_loss * self.years_per_timestep
+        #Calculate excess yld
+        yld_delta = disability_loss_scaled * (1 - yld_rate)
         new_rate = yld_rate + yld_delta
 
         return new_rate
