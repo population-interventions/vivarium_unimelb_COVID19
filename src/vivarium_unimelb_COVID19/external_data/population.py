@@ -117,9 +117,8 @@ class Population:
         # - Each cohort has a separate APC (column FE)
         # - ACMR = BASE_ACMR * e^(APC * (year - 2011))
         df_apc = self.get_acmr_apc()
-        df_acmr = self._mort_data[['age', 'sex', 'mortality_rate']]
-        df_acmr = df_acmr.rename(columns={'mortality_rate': 'value'})
-        base_acmr = df_acmr['value'].copy()
+        df_acmr = self._mort_data[['age', 'sex'] + self.draw_columns]
+        base_acmr = df_acmr[self.draw_columns].copy()
 
         # Replace 'age' with age groups.
         df_acmr = df_acmr.rename(columns={'age': 'age_start'})
@@ -139,12 +138,12 @@ class Population:
                 year_apc = df_apc[df_apc.year == year]
                 apc = year_apc['value'].values
                 scale = np.exp(apc * (year - self.year_start))
-                df_acmr.loc[:, 'value'] = base_acmr * scale
+                df_acmr.loc[:, self.draw_columns] = base_acmr * scale[:, None]
             else:
                 # NOTE: use the same scale for this cohort as per the previous
                 # year; shift by 2 because there are male and female cohorts.
                 scale[2:] = scale[:-2]
-                df_acmr.loc[:, 'value'] = base_acmr * scale
+                df_acmr.loc[:, self.draw_columns] = base_acmr * scale[:, None]
             df_acmr['year_start'] = year
             df_acmr['year_end'] = year + 1
             tables.append(df_acmr.copy())
