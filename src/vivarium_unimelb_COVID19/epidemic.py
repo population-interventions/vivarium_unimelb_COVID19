@@ -33,9 +33,11 @@ class Epidemic:
         self.load_infection_data(builder)
         self.load_fatality_data(builder)
         self.load_disability_data(builder)
+        self.load_cost_data(builder)
         self.load_population_view(builder)
         self.register_mortality_modifier(builder)
         self.register_morbidity_modifier(builder)
+        self.register_expenditure_modifier(builder)
 
         builder.event.register_listener('time_step__prepare',
                                         self.on_time_step_prepare)
@@ -68,12 +70,23 @@ class Epidemic:
                                                       parameter_columns=['age', 'year'])
 
         self.disability_risk = builder.value.register_value_producer(f'{self.name}.disability_risk',
-                                                                     source=disability_table)                                                               
+                                                                     source=disability_table)
+
+
+    def load_cost_data(self, builder):
+        cost_data = builder.data.load('{}.health_cost.{}'.format(self.name, self.scenario))
+        cost_table = builder.lookup.build_table(cost_data, 
+                                                key_columns=['sex'],
+                                                parameter_columns=['age', 'year'])
+
+        self.health_cost = builder.value.register_value_producer(f'{self.name}.health_cost',
+                                                                     source=cost_table)                                                               
 
 
     def load_population_view(self, builder):
-        required_pop_columns = ['age', 'sex', 'population']
-        self.new_pop_columns = [f'{self.name}_infected_num',
+        required_pop_columns = ['age', 'sex', 'population', 'expenditure']
+        self.new_pop_columns = [f'{self.name}_cost',
+                                f'{self.name}_infected_num',
                                 f'{self.name}_mort_risk',
                                 f'{self.name}_disability_loss',
                                 f'{self.name}_deaths',
@@ -109,13 +122,16 @@ class Epidemic:
         infection_risk = self.infection_prop(idx)
         fatality_risk = self.fatality_risk(idx)
         disability_risk = self.disability_risk(idx)
+        health_cost = self.health_cost(idx)
 
         pop_num = pop['population']
         infected_num = pop_num * infection_risk
         deaths = infected_num * fatality_risk
         disability_loss = disability_risk
         mort_risk = deaths/pop_num
+        total_cost = health_cost * pop_num
 
+        pop[f'{self.name}_cost'] = total_cost
         pop[f'{self.name}_infected_num'] = infected_num
         pop[f'{self.name}_mort_risk'] = mort_risk
         pop[f'{self.name}_disability_loss'] = disability_loss
@@ -135,6 +151,12 @@ class Epidemic:
     def register_morbidity_modifier(self, builder):
         rate_name = 'yld_rate'
         modifier = lambda ix, yld_rate: self.yld_rate_adjustment(ix, yld_rate)
+        builder.value.register_value_modifier(rate_name, modifier)
+
+    
+    def register_expenditure_modifier(self, builder):
+        rate_name = 'health_costs'
+        modifier = lambda ix, expenditure: self.expenditure_adjustment(ix, expenditure)
         builder.value.register_value_modifier(rate_name, modifier)
 
 
@@ -168,3 +190,12 @@ class Epidemic:
         new_rate = yld_rate + yld_delta
 
         return new_rate
+
+
+    def expenditure_adjustment(self, index, expenditure):
+        pop = self.population_view.get(index)
+
+        #Scale?
+        total_health_cost = pop[f'{self.name}_cost']
+
+        return expenditure + total_health_cost

@@ -52,6 +52,7 @@ class BasePopulation:
                    'acmr', 'bau_acmr',
                    'pr_death', 'bau_pr_death', 'deaths', 'bau_deaths',
                    'yld_rate', 'bau_yld_rate',
+                   'expenditure', 'bau_expenditure',
                    'person_years', 'bau_person_years',
                    'HALY', 'bau_HALY']
 
@@ -241,6 +242,49 @@ class Disability:
         pop.HALY = pop.person_years * (1 - pop.yld_rate)
         pop.bau_HALY = pop.bau_person_years * (1 - pop.bau_yld_rate)
         self.population_view.update(pop)
+
+
+class Expenditure:
+    """
+    This component calculates the health expendtiure for each
+    cohort over time.
+    """
+    
+    @property
+    def name(self):
+        return 'expenditure'
+
+    def setup(self, builder):
+        """Load the annual per-person health expenditure."""
+        #self.years_per_timestep = builder.configuration.time.step_size/365
+
+        exp_data = builder.data.load('population.expenditure')
+        exp_table = builder.lookup.build_table(exp_data, 
+                                               key_columns=['sex'], 
+                                               parameter_columns=['age','year'])
+
+        self.expenditure = builder.value.register_rate_producer('health_costs', source=exp_table)
+        self.bau_expenditure = builder.value.register_rate_producer('bau_health_costs', source=exp_table)
+
+        builder.event.register_listener('time_step', self.on_time_step)
+
+        self.population_view = builder.population.get_view([
+            'expenditure', 'bau_expenditure',
+            'population', 'bau_population'])
+
+    def on_time_step(self, event):
+        """
+        Calculate health costs each cohort at each time-step, for both the
+        BAU and intervention scenarios.
+        """
+        pop = self.population_view.get(event.index)
+        if pop.empty:
+            return
+
+        pop.expenditure = pop.population * self.expenditure(event.index)
+        pop.bau_expenditure = pop.bau_population * self.bau_expenditure(event.index)    
+
+        self.population_view.update(pop)    
 
 
 def load_population_data(builder):

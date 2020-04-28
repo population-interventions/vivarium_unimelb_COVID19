@@ -4,6 +4,7 @@ components:
             - BasePopulation()
             - Mortality()
             - Disability()
+            - Expenditure()
         epidemic:
             - Epidemic('COVID19')
         {% if intervention_class is defined %}

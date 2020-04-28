@@ -4,13 +4,14 @@ components:
             - BasePopulation()
             - Mortality()
             - Disability()
+            - Expenditure()
             #- MortalityEffects('GDP')
         disease:
             - AcuteDisease('RTC')
             - AcuteDisease('Suicide')
-        #disease_modifiers:
-            #- AcuteDiseaseModifier('RTC', 'unemployment')
-            #- AcuteDiseaseModifier('Suicide', 'unemployment')
+        disease_modifiers:
+            - AcuteDiseaseModifier('RTC', 'unemployment')
+            - AcuteDiseaseModifier('Suicide', 'unemployment')
         epidemic:
             - Epidemic('COVID19')
         observer:
@@ -20,7 +21,7 @@ components:
 configuration:
     input_data:
         artifact_path: C:\Users\andersenp\OneDrive - The University of Melbourne\Documents\Python_CEB\COVID_Vivarium\vivarium_unimelb_COVID19/artifacts/new_zealand_test.hdf
-        input_draw_number: 0
+        input_draw_number: 42
     interpolation:
         validate: False
     #epidemic:

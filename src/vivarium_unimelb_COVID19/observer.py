@@ -75,7 +75,8 @@ class MorbidityMortality:
                    'deaths', 'bau_deaths',
                    'yld_rate', 'bau_yld_rate',
                    'person_years', 'bau_person_years',
-                   'HALY', 'bau_HALY']
+                   'HALY', 'bau_HALY',
+                   'expenditure', 'bau_expenditure']
         self.population_view = builder.population.get_view(columns)
         self.clock = builder.time.clock()
         builder.event.register_listener('collect_metrics', self.on_collect_metrics)
@@ -90,7 +91,8 @@ class MorbidityMortality:
                                   'deaths', 'bau_deaths',
                                   'yld_rate', 'bau_yld_rate',
                                   'person_years', 'bau_person_years',
-                                  'HALY', 'bau_HALY']
+                                  'HALY', 'bau_HALY',
+                                  'expenditure', 'bau_expenditure']
 
         self.table_cols = self.output_table_cols + ['year']
 
