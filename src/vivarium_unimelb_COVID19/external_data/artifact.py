@@ -11,7 +11,7 @@ from vivarium.framework.artifact import Artifact
 from vivarium_unimelb_COVID19.external_data.population import Population
 from vivarium_unimelb_COVID19.external_data.epidemic import Epidemic
 from vivarium_unimelb_COVID19.external_data.mortality_effects import GDP
-from vivarium_unimelb_COVID19.external_data.disease import Diseases
+from vivarium_unimelb_COVID19.external_data.disease import AcuteDisease
 from vivarium_unimelb_COVID19.external_data.disease_modifier import Disease_modifier
 from vivarium_unimelb_COVID19.external_data.uncertainty import Normal, LogNormal
 
@@ -22,7 +22,7 @@ RANDOM_SEED = 49430
 
 POPULATIONS = ['new_zealand_test']
 #POPULATIONS = ['australia','new_zealand','sweden']
-#DISEASES = ['RTC', 'Suicide']
+ACUTE_DISEASES = ['RTC', 'Suicide']
 SCENARIOS = ['elimination', 'flatten', 'suppress']
 
 
@@ -67,29 +67,8 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         # Instantiate components for the population.
         pop = Population(data_dir, BASE_LIFETABLE_YEAR_START)
         epi = Epidemic(data_dir, SIMULATION_YEAR_START)
-        gdp = GDP(data_dir, SIMULATION_YEAR_START)
-        dis = Diseases(data_dir,  BASE_LIFETABLE_YEAR_START, pop.year_end)
+        #gdp = GDP(data_dir, SIMULATION_YEAR_START)
         unempl = Disease_modifier(data_dir, SIMULATION_YEAR_START, 'unemployment')
-
-        # Define data structures to record the samples from the unit interval that
-        # are used to sample each rate/quantity.
-        smp_yld = prng.random_sample(num_draws)
-
-        # Define the sampling distributions in terms of their family and their
-        # *relative* standard deviation.
-        dist_yld = LogNormal(sd_pcnt=10)
-        dist_acute_f = Normal(sd_pcnt=10)
-        dist_acute_yld = Normal(sd_pcnt=10)
-        smp_acute_f = {}
-        smp_acute_yld = {}
-        
-        logger.info('{} Generating samples'.format(
-            datetime.datetime.now().strftime("%H:%M:%S")))
-
-        for name, disease in dis.acute.items():
-            # Draw samples for each rate/quantity for this disease.
-            smp_acute_f[name] = prng.random_sample(num_draws)
-            smp_acute_yld[name] = prng.random_sample(num_draws)
 
         # Now write all of the required tables:
         pop_artifact_fmt = '{}.hdf'.format(population)
@@ -142,28 +121,28 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
                         epi.get_disability_risk(scenario))
 
         # Write the acute disease tables.
-        for name, disease in dis.acute.items():
+        for disease in ACUTE_DISEASES:
             logger.info('{} Writing tables for {}'.format(
-                datetime.datetime.now().strftime("%H:%M:%S"), name))
+                datetime.datetime.now().strftime("%H:%M:%S"), disease))
 
-            write_table(art, 'acute_disease.{}.mortality'.format(name),
-                         disease.sample_excess_mortality_from(
-                             dist_acute_f, smp_acute_f[name]))
+            acdis = AcuteDisease(data_dir, disease, SIMULATION_YEAR_START)
+
+            write_table(art, 'acute_disease.{}.mortality'.format(disease),
+                        acdis.get_death_risk())
             
-            write_table(art, 'acute_disease.{}.morbidity'.format(name),
-                         disease.sample_disability_from(
-                             dist_acute_yld, smp_acute_yld[name]))
+            write_table(art, 'acute_disease.{}.morbidity'.format(disease),
+                        acdis.get_disability_risk())
 
         # Write disease modifier tables.
         logger.info('{} Writing disease modifier tables'.format(
                 datetime.datetime.now().strftime("%H:%M:%S")))
-        for name, disease in dis.acute.items():
+        for disease in ACUTE_DISEASES:
             
-            write_table(art, 'acute_disease.{}.mortality_modifier_unemployment'.format(name),
-                            unempl.get_disease_rate_scalar(name, 'mortality'))
+            write_table(art, 'acute_disease.{}.mortality_modifier_unemployment'.format(disease),
+                            unempl.get_disease_rate_scalar(disease, 'mortality'))
 
-            write_table(art, 'acute_disease.{}.disability_modifier_unemployment'.format(name),
-                            unempl.get_disease_rate_scalar(name, 'disability'))
+            write_table(art, 'acute_disease.{}.disability_modifier_unemployment'.format(disease),
+                            unempl.get_disease_rate_scalar(disease, 'disability'))
 
 
         print(pop_artifact_file)
