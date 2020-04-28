@@ -96,8 +96,8 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
                         pop.get_mortality_rate())
         write_table(art, 'cause.all_causes.disability_rate',
                         pop.get_disability_rate())
-        #write_table(art, 'population.expenditure',
-        #                pop.get_expenditure())
+        write_table(art, 'population.expenditure',
+                        pop.get_expenditure())
 
         # Write the mortality effect tables.
         #logger.info('{} Writing mortality effect tables'.format(
@@ -119,6 +119,9 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
 
             write_table(art, 'COVID19.disability_risk.{}'.format(scenario),
                         epi.get_disability_risk(scenario))
+
+            write_table(art, 'COVID19.health_cost.{}'.format(scenario),
+                        epi.get_health_cost(scenario))
 
         # Write the acute disease tables.
         for disease in ACUTE_DISEASES:

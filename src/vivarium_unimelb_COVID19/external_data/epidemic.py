@@ -34,9 +34,13 @@ class Epidemic:
         disability_data_file = '{}/dr_table.csv'.format(data_dir)
         disability_df = get_dataframe(fatality_data_file)
 
+        cost_data_file = '{}/popcost_table.csv'.format(data_dir)
+        cost_df = get_dataframe(cost_data_file)
+
         self._infection_data = infection_df
         self._fatality_data = fatality_df
         self._disability_data = disability_df
+        self._cost_data = cost_df
 
 
     def get_infection_proportion(self, scenario):
@@ -79,6 +83,24 @@ class Epidemic:
         """Return the disability risk for each age stratum."""
 
         df = self._disability_data.loc[self._disability_data['scenario'] == scenario]
+
+        #Convert relative year columns to absolute years
+        df = df.rename(columns={'time_start': 'year_start', 'time_end': 'year_end'})
+        df['year_start'] += self.year_start
+        df['year_end'] += self.year_start
+
+        index_cols = ['age_start', 'age_end', 'year_start', 'year_end', 'sex']
+        draw_cols = ['draw_{}'.format(i) for i in range(DRAW_NUM)]
+
+        cols = cols = index_cols + draw_cols
+
+        return df[cols]
+
+
+    def get_health_cost(self, scenario):
+        """Return the health cost due to epidemic for each age stratum."""
+
+        df = self._cost_data.loc[self._cost_data['scenario'] == scenario]
 
         #Convert relative year columns to absolute years
         df = df.rename(columns={'time_start': 'year_start', 'time_end': 'year_end'})
