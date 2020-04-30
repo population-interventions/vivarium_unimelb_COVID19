@@ -75,7 +75,7 @@ class BasePopulation:
                                day=start_day)
     
         self.clock = builder.time.clock()
-        self.years_per_timestep = builder.configuration.time.step_size/365
+        self.years_per_timestep = builder.configuration.time.step_size/365.25
 
         # Track all of the quantities that exist in the core spreadsheet table.
         builder.population.initializes_simulants(self.on_initialize_simulants, creates_columns=columns)
