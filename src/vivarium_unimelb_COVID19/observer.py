@@ -76,7 +76,8 @@ class MorbidityMortality:
                    'yld_rate', 'bau_yld_rate',
                    'person_years', 'bau_person_years',
                    'HALY', 'bau_HALY',
-                   'expenditure', 'bau_expenditure']
+                   'expenditure', 'bau_expenditure',
+                   'COVID19_deaths']
         self.population_view = builder.population.get_view(columns)
         self.clock = builder.time.clock()
         builder.event.register_listener('collect_metrics', self.on_collect_metrics)
@@ -92,12 +93,22 @@ class MorbidityMortality:
                                   'yld_rate', 'bau_yld_rate',
                                   'person_years', 'bau_person_years',
                                   'HALY', 'bau_HALY',
-                                  'expenditure', 'bau_expenditure']
+                                  'expenditure', 'bau_expenditure',
+                                  'COVID19_deaths']
 
         self.table_cols = self.output_table_cols + ['year']
 
         self.output_file = output_file(builder.configuration,
                                        self.output_suffix)
+
+        self.years_per_timestep = builder.configuration.time.step_size/365
+
+        if 'discount_rate' in builder.configuration.observer.keys():
+            discount_rate = builder.configuration.observer.discount_rate * self.years_per_timestep
+        else: discount_rate = 0   
+        
+        self.discount_factor = 1/(1 + discount_rate)
+        self.current_discount_factor = 1
 
     def on_collect_metrics(self, event):
         pop = self.population_view.get(event.index)
@@ -112,6 +123,14 @@ class MorbidityMortality:
         # Record the population size prior to the deaths.
         pop['prev_population'] = pop['population'] + pop['deaths']
         pop['bau_prev_population'] = pop['bau_population'] + pop['bau_deaths']
+
+        #Discount HALY's and health costs
+        self.current_discount_factor = self.current_discount_factor * self.discount_factor
+        pop['bau_HALY'] = pop['bau_HALY'] * self.current_discount_factor
+        pop['HALY'] = pop['HALY'] * self.current_discount_factor
+        pop['bau_expenditure'] = pop['bau_expenditure'] * self.current_discount_factor
+        pop['expenditure'] = pop['expenditure'] * self.current_discount_factor
+
         self.tables.append(pop[self.table_cols])
 
     def calculate_LE(self, table, py_col, denom_col):
@@ -159,12 +178,12 @@ class MorbidityMortality:
         data = data[cols]
         # Calculate life expectancy and HALE for the BAU and intervention,
         # with respect to the initial population, not the survivors.
-        data['LE'] = self.calculate_LE(data, 'person_years', 'prev_population')
-        data['bau_LE'] = self.calculate_LE(data, 'bau_person_years',
-                                           'bau_prev_population')
-        data['HALE'] = self.calculate_LE(data, 'HALY', 'prev_population')
-        data['bau_HALE'] = self.calculate_LE(data, 'bau_HALY',
-                                           'bau_prev_population')
+        #data['LE'] = self.calculate_LE(data, 'person_years', 'prev_population')
+        #data['bau_LE'] = self.calculate_LE(data, 'bau_person_years',
+        #                                   'bau_prev_population')
+        #data['HALE'] = self.calculate_LE(data, 'HALY', 'prev_population')
+        #data['bau_HALE'] = self.calculate_LE(data, 'bau_HALY',
+        #                                   'bau_prev_population')
         data.to_csv(self.output_file, index=False)
 
 class EpidemicMortality:
