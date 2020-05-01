@@ -7,7 +7,7 @@ import pathlib
 from datetime import datetime
 
 #Includes draw 0
-DRAW_NUM = 100
+DRAW_NUM = 101
 
 #from .uncertainty import sample_fixed_rate_from
 

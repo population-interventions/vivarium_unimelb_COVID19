@@ -5,7 +5,7 @@ import numpy as np
 import pathlib
 
 #Includes draw 0
-DRAW_NUM = 100
+DRAW_NUM = 101
 
 class Population:
 
