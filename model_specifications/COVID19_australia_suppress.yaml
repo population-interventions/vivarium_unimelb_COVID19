@@ -18,19 +18,19 @@ components:
 
 configuration:
     input_data:
-        artifact_path: {{ output_root }}/artifacts/{{ population }}.hdf
+        artifact_path: C:\Users\andersenp\OneDrive - The University of Melbourne\Documents\Python_CEB\COVID_Vivarium\vivarium_unimelb_COVID19/artifacts/australia.hdf
         input_draw_number: 0
     interpolation:
         validate: False
     observer:
-        output_prefix: results/{{ population }}/{{ basename }}
+        output_prefix: results/australia/COVID19_australia_suppress
         discount_rate: 0.03
     population:
         # The population size here is the number of cohorts.
         # There are 22 age bins (0-4, 5-9, ..., 105-109) for females and for
         # males, making a total of 44 cohorts.
         population_size: 44
-    scenario: {{ scenario }}
+    scenario: suppress
     time:
         start:
             day: 1

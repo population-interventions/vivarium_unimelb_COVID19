@@ -5,39 +5,44 @@ components:
             - Mortality()
             - Disability()
             - Expenditure()
-        epidemic:
-            - Epidemic('COVID19')
+            #- MortalityEffects('GDP')
         disease:
             - AcuteDisease('RTC')
-            - AcuteDisease('SelfHarm')
+            - AcuteDisease('Suicide')
         disease_modifiers:
             - AcuteDiseaseModifier('RTC', 'unemployment')
-            - AcuteDiseaseModifier('SelfHarm', 'unemployment')
+            - AcuteDiseaseModifier('Suicide', 'unemployment')
+        epidemic:
+            - Epidemic('COVID19')
         observer:
             - MorbidityMortality()
-
+        #    - EpidemicMortality('COVID19')
+    
 configuration:
     input_data:
-        artifact_path: {{ output_root }}/artifacts/{{ population }}.hdf
-        input_draw_number: 0
+        artifact_path: C:\Users\andersenp\OneDrive - The University of Melbourne\Documents\Python_CEB\COVID_Vivarium\vivarium_unimelb_COVID19/artifacts/new_zealand_test.hdf
+        input_draw_number: 42
     interpolation:
         validate: False
+    #epidemic:
+    #    fatality:
+    #        estimate: Verity 
     observer:
-        output_prefix: results/{{ population }}/{{ basename }}
-        discount_rate: 0.03
+        output_prefix: results/COVID19_new_zealand_test
+        #discount_rate: 0.03
     population:
         # The population size here is the number of cohorts.
         # There are 22 age bins (0-4, 5-9, ..., 105-109) for females and for
         # males, making a total of 44 cohorts.
         population_size: 44
-    scenario: {{ scenario }}
+    scenario: flatten
     time:
         start:
             day: 1
             month: 1
             year: 2020
         end:
-            day: 1
-            month: 1
-            year: 2040
+            day: 31
+            month: 12
+            year: 2020 #change later
         step_size: 30  # In days

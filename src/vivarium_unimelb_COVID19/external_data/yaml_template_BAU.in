@@ -5,14 +5,6 @@ components:
             - Mortality()
             - Disability()
             - Expenditure()
-        epidemic:
-            - Epidemic('COVID19')
-        disease:
-            - AcuteDisease('RTC')
-            - AcuteDisease('SelfHarm')
-        disease_modifiers:
-            - AcuteDiseaseModifier('RTC', 'unemployment')
-            - AcuteDiseaseModifier('SelfHarm', 'unemployment')
         observer:
             - MorbidityMortality()
 
@@ -30,7 +22,6 @@ configuration:
         # There are 22 age bins (0-4, 5-9, ..., 105-109) for females and for
         # males, making a total of 44 cohorts.
         population_size: 44
-    scenario: {{ scenario }}
     time:
         start:
             day: 1
