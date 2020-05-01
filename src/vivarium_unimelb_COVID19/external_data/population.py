@@ -5,7 +5,7 @@ import numpy as np
 import pathlib
 
 #Includes draw 0
-DRAW_NUM = 2001
+DRAW_NUM = 100
 
 class Population:
 
@@ -15,10 +15,10 @@ class Population:
         data_file_mort = '{}/base_population_mor.csv'.format(data_dir)
         data_path_mort = str(pathlib.Path(data_file_mort).resolve())
 
-        data_file_dis = '{}/base_population_dis.csv'.format(data_dir)
+        data_file_dis = '{}/base_population_yld.csv'.format(data_dir)
         data_path_dis = str(pathlib.Path(data_file_dis).resolve())
 
-        data_file_exp = '{}/base_population_exp.csv'.format(data_dir)
+        data_file_exp = '{}/base_population_hexp.csv'.format(data_dir)
         data_path_exp = str(pathlib.Path(data_file_exp).resolve())
 
         df_mort = pd.read_csv(data_path_mort)

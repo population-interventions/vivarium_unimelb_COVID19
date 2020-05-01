@@ -20,9 +20,9 @@ BASE_LIFETABLE_YEAR_START = 2017
 SIMULATION_YEAR_START = 2020
 RANDOM_SEED = 49430
 
-POPULATIONS = ['new_zealand_test']
-#POPULATIONS = ['australia','new_zealand','sweden']
-ACUTE_DISEASES = ['RTC', 'Suicide']
+#POPULATIONS = ['new_zealand_test']
+POPULATIONS = ['australia','new_zealand','sweden']
+ACUTE_DISEASES = ['RTC', 'SelfHarm']
 SCENARIOS = ['elimination', 'flatten', 'suppress']
 
 
@@ -67,8 +67,6 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         # Instantiate components for the population.
         pop = Population(data_dir, BASE_LIFETABLE_YEAR_START)
         epi = Epidemic(data_dir, SIMULATION_YEAR_START)
-        #gdp = GDP(data_dir, SIMULATION_YEAR_START)
-        unempl = Disease_modifier(data_dir, SIMULATION_YEAR_START, 'unemployment')
 
         # Now write all of the required tables:
         pop_artifact_fmt = '{}.hdf'.format(population)
@@ -99,13 +97,6 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         write_table(art, 'population.expenditure',
                         pop.get_expenditure())
 
-        # Write the mortality effect tables.
-        #logger.info('{} Writing mortality effect tables'.format(
-        #    datetime.datetime.now().strftime("%H:%M:%S")))
-        #
-        #write_table(art, 'mortality_effects.GDP',
-        #                gdp.get_GDP_effects())
-
         # Write epidemic tables.
         logger.info('{} Writing epidemic tables'.format(
             datetime.datetime.now().strftime("%H:%M:%S")))
@@ -121,7 +112,7 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
                         epi.get_disability_risk(scenario))
 
             write_table(art, 'COVID19.health_cost.{}'.format(scenario),
-                        epi.get_health_cost(scenario))
+                        epi.get_health_cost(scenario))       
 
         # Write the acute disease tables.
         for disease in ACUTE_DISEASES:
@@ -140,12 +131,13 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
         logger.info('{} Writing disease modifier tables'.format(
                 datetime.datetime.now().strftime("%H:%M:%S")))
         for disease in ACUTE_DISEASES:
-            
-            write_table(art, 'acute_disease.{}.mortality_modifier_unemployment'.format(disease),
-                            unempl.get_disease_rate_scalar(disease, 'mortality'))
+            unempl = Disease_modifier(data_dir, SIMULATION_YEAR_START, 'unemployment', disease)
+            for scenario in SCENARIOS:
+                write_table(art, 'acute_disease.{}.mortality_modifier_unemployment_{}'.format(disease, scenario),
+                                unempl.get_disease_rate_scalar(scenario, 'mortality'))
 
-            write_table(art, 'acute_disease.{}.disability_modifier_unemployment'.format(disease),
-                            unempl.get_disease_rate_scalar(disease, 'disability'))
+                write_table(art, 'acute_disease.{}.disability_modifier_unemployment_{}'.format(disease, scenario),
+                                unempl.get_disease_rate_scalar(scenario, 'disability'))
 
 
         print(pop_artifact_file)

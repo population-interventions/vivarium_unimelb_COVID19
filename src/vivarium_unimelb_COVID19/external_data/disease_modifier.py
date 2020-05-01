@@ -6,7 +6,8 @@ import pathlib
 
 from datetime import datetime
 
-#from .uncertainty import sample_fixed_rate_from
+#Includes draw 0
+DRAW_NUM = 100
 
 def get_dataframe(filename):
     data_file = filename
@@ -17,41 +18,30 @@ def get_dataframe(filename):
 
 class Disease_modifier:
 
-    def __init__(self, data_dir, year_start, modifier):
-        modifier_data_file = '{}/{}_effects.csv'.format(data_dir, modifier)
+    def __init__(self, data_dir, year_start, modifier, disease_name):
+        self.year_start = year_start
+        modifier_data_file = '{}/diseases/{}_{}_pif.csv'.format(data_dir, disease_name, modifier)
         df = get_dataframe(modifier_data_file)
 
         self._data = df
 
-
-    def get_disease_mortality(self, disease_name):
-        """Return the mortality effects for a single disease for each age stratum."""
-        index_cols = ['age_start', 'age_end', 'sex', 'year_start', 'year_end']
-        mortality_column = 'mortality_scalar'
-        cols = index_cols + [mortality_column]
-
-        df =  self._data.loc[self._data['disease'] == disease_name]
-        df = df[cols].rename(columns={mortality_column: 'value'})
-
-        return df
-
-    def get_disease_disability(self, disease_name):
-        """Return the disability effects for a single disease for each age stratum."""
-        index_cols = ['age_start', 'age_end', 'sex', 'year_start', 'year_end']
-        disability_column = 'disability_scalar'
-        cols = index_cols + [disability_column]
-
-        df =  self._data.loc[self._data['disease'] == disease_name]
-        df = df[cols].rename(columns={disability_column: 'value'})
-
-        return df
-
-    def get_disease_rate_scalar(self, disease_name, rate_name):
+    def get_disease_rate_scalar(self, scenario, rate_name):
         """Return the effects of a single rate for a single disease for each age stratum."""
-        df = self._data.loc[(self._data['disease'] == disease_name) &
-                            (self._data['rate'] == rate_name)]
-        
-        return df
+        #df = self._data.loc[(self._data['scenario'] == scenario) &
+        #                    (self._data['rate'] == rate_name)]
+        df = self._data.loc[self._data['scenario'] == scenario]
+
+        #Convert relative year columns to absolute years
+        df = df.rename(columns={'time_start': 'year_start', 'time_end': 'year_end'})
+        df['year_start'] += self.year_start
+        df['year_end'] += self.year_start
+
+        index_cols = ['age_start', 'age_end', 'year_start', 'year_end', 'sex']
+        draw_cols = ['draw_{}'.format(i) for i in range(DRAW_NUM)]
+
+        cols = cols = index_cols + draw_cols
+
+        return df[cols]
 
                 
 
