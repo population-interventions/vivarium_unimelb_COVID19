@@ -32,16 +32,21 @@ class AcuteDiseaseModifier:
 
     def setup(self, builder):
         """Load the morbidity and mortality modifier data."""
-        mortality_mod_data = builder.data.load('acute_disease.{}.mortality_modifier_{}'.format(
+        self.scenario = builder.configuration.scenario
+
+        mortality_mod_data = builder.data.load('acute_disease.{}.mortality_modifier_{}_{}'.format(
                                                                     self.disease_name,
-                                                                    self.modifier_name))
+                                                                    self.modifier_name,
+                                                                    self.scenario))
+
         self.mortality_modifier =  builder.lookup.build_table(mortality_mod_data, 
                                               key_columns=['sex'], 
                                               parameter_columns=['age','year'])
         
-        disability_mod_data = builder.data.load('acute_disease.{}.disability_modifier_{}'.format(
+        disability_mod_data = builder.data.load('acute_disease.{}.disability_modifier_{}_{}'.format(
                                                                     self.disease_name,
-                                                                    self.modifier_name))
+                                                                    self.modifier_name,
+                                                                    self.scenario))
         self.disability_modifier =  builder.lookup.build_table(disability_mod_data, 
                                               key_columns=['sex'], 
                                               parameter_columns=['age','year'])
