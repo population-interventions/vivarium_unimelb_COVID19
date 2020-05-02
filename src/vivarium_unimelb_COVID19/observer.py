@@ -92,8 +92,10 @@ class MorbidityMortality:
                                   'deaths', 'bau_deaths',
                                   'yld_rate', 'bau_yld_rate',
                                   'person_years', 'bau_person_years',
-                                  'HALY', 'bau_HALY',
-                                  'expenditure', 'bau_expenditure',
+                                  'HALY', 'HALY_disc',
+                                  'bau_HALY', 'bau_HALY_disc',
+                                  'expenditure', 'expenditure_disc',
+                                  'bau_expenditure', 'bau_expenditure_disc',
                                   'COVID19_deaths']
 
         self.table_cols = self.output_table_cols + ['year']
@@ -126,10 +128,10 @@ class MorbidityMortality:
 
         #Discount HALY's and health costs
         self.current_discount_factor = self.current_discount_factor * self.discount_factor
-        pop['bau_HALY'] = pop['bau_HALY'] * self.current_discount_factor
-        pop['HALY'] = pop['HALY'] * self.current_discount_factor
-        pop['bau_expenditure'] = pop['bau_expenditure'] * self.current_discount_factor
-        pop['expenditure'] = pop['expenditure'] * self.current_discount_factor
+        pop['bau_HALY_disc'] = pop['bau_HALY'] * self.current_discount_factor
+        pop['HALY_disc'] = pop['HALY'] * self.current_discount_factor
+        pop['bau_expenditure_disc'] = pop['bau_expenditure'] * self.current_discount_factor
+        pop['expenditure_disc'] = pop['expenditure'] * self.current_discount_factor
 
         self.tables.append(pop[self.table_cols])
 
