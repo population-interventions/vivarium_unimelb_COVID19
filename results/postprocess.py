@@ -52,7 +52,7 @@ for country in countries:
             df['scenario'] = ([scenario]*df.shape[0])
             output_df = pd.concat([output_df, df])
 
-print('Writing output...)
+print('Writing output...')
 output_df.to_csv(output_file, index=False)
 print('Done.')      
 
