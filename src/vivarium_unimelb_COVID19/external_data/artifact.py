@@ -23,10 +23,10 @@ RANDOM_SEED = 49430
 #POPULATIONS = ['new_zealand_test']
 POPULATIONS = ['australia','new_zealand','sweden']
 ACUTE_DISEASES = ['RTC', 'SelfHarm']
-#SCENARIOS = ['elimination', 'flatten', 'suppress']
+SCENARIOS = ['elimination', 'flatten', 'suppress']
 #SCENARIOS = ['elimination_asymp', 'flatten_asymp', 'suppress_asymp']
 #SCENARIOS = ['elimination_verity', 'flatten_verity', 'suppress_verity']
-SCENARIOS = ['suppress_2point5inf', 'suppress_5inf', 'flatten_60inf']
+#SCENARIOS = ['suppress_2point5inf', 'suppress_5inf', 'flatten_60inf']
 
 
 def check_for_bin_edges(df):
