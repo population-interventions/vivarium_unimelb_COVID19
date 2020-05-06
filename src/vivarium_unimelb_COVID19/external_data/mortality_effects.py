@@ -15,16 +15,16 @@ def get_dataframe(filename):
 
     return df
 
-class GDP:
+class MortEffects:
 
-    def __init__(self, data_dir, year_start):
-        GDP_data_file = '{}/GDP_mortality_effects.csv'.format(data_dir)
-        GDP_df = get_dataframe(GDP_data_file)
+    def __init__(self, data_dir, year_start, effect_name):
+        data_file = '{}/{}_mortality_effects.csv'.format(data_dir,effect_name)
+        df = get_dataframe(data_file)
 
-        self._GDP_data = GDP_df
+        self._data = df
 
 
-    def get_GDP_effects(self):
-        """Return the mortality delta for each age stratum."""
-        return self._GDP_data
+    def get_mort_effects(self):
+        """Return the mortality scale for each age stratum."""
+        return self._data
 

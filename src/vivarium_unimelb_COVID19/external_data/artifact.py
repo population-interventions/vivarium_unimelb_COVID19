@@ -10,7 +10,7 @@ from vivarium.framework.artifact import Artifact
 
 from vivarium_unimelb_COVID19.external_data.population import Population
 from vivarium_unimelb_COVID19.external_data.epidemic import Epidemic
-from vivarium_unimelb_COVID19.external_data.mortality_effects import GDP
+from vivarium_unimelb_COVID19.external_data.mortality_effects import MortEffects
 from vivarium_unimelb_COVID19.external_data.disease import AcuteDisease
 from vivarium_unimelb_COVID19.external_data.disease_modifier import Disease_modifier
 from vivarium_unimelb_COVID19.external_data.uncertainty import Normal, LogNormal
@@ -23,7 +23,10 @@ RANDOM_SEED = 49430
 #POPULATIONS = ['new_zealand_test']
 POPULATIONS = ['australia','new_zealand','sweden']
 ACUTE_DISEASES = ['RTC', 'SelfHarm']
-SCENARIOS = ['elimination', 'flatten', 'suppress']
+#SCENARIOS = ['elimination', 'flatten', 'suppress']
+#SCENARIOS = ['elimination_asymp', 'flatten_asymp', 'suppress_asymp']
+#SCENARIOS = ['elimination_verity', 'flatten_verity', 'suppress_verity']
+SCENARIOS = ['suppress_2point5inf', 'suppress_5inf', 'flatten_60inf']
 
 
 def check_for_bin_edges(df):
@@ -66,6 +69,7 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
 
         # Instantiate components for the population.
         pop = Population(data_dir, BASE_LIFETABLE_YEAR_START)
+        mort = MortEffects(data_dir, SIMULATION_YEAR_START, 'ExcessMort')
         epi = Epidemic(data_dir, SIMULATION_YEAR_START)
 
         # Now write all of the required tables:
@@ -96,6 +100,13 @@ def assemble_artifacts(num_draws, output_path: Path, seed: int = RANDOM_SEED):
                         pop.get_disability_rate())
         write_table(art, 'population.expenditure',
                         pop.get_expenditure())
+
+        # Write the mortality effect tables.
+        logger.info('{} Writing mortality effects tables'.format(
+            datetime.datetime.now().strftime("%H:%M:%S")))
+
+        write_table(art, 'mortality_effects.ExcessMort',
+                        mort.get_mort_effects())
 
         # Write epidemic tables.
         logger.info('{} Writing epidemic tables'.format(

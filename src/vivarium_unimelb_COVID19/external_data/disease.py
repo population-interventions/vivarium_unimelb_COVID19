@@ -7,7 +7,7 @@ import pathlib
 
 
 #Includes draw 0
-DRAW_NUM = 101
+DRAW_NUM = 1
 
 #from .uncertainty import sample_fixed_rate_from
 

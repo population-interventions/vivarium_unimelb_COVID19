@@ -7,7 +7,7 @@ import pathlib
 from datetime import datetime
 
 #Includes draw 0
-DRAW_NUM = 101
+DRAW_NUM = 1
 
 def get_dataframe(filename):
     data_file = filename
@@ -20,7 +20,10 @@ class Disease_modifier:
 
     def __init__(self, data_dir, year_start, modifier, disease_name):
         self.year_start = year_start
-        modifier_data_file = '{}/diseases/{}_{}_pif.csv'.format(data_dir, disease_name, modifier)
+        #modifier_data_file = '{}/diseases/{}_{}_pif.csv'.format(data_dir, disease_name, modifier)
+        #modifier_data_file = '{}/diseases/{}_{}_pif_scenario_asymp.csv'.format(data_dir, disease_name, modifier)
+        #modifier_data_file = '{}/diseases/{}_{}_pif_scenario_verity.csv'.format(data_dir, disease_name, modifier)
+        modifier_data_file = '{}/diseases/{}_{}_pif_scenario_misc.csv'.format(data_dir, disease_name, modifier)
         df = get_dataframe(modifier_data_file)
 
         self._data = df
