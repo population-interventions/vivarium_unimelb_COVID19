@@ -35,7 +35,7 @@ class Epidemic:
         fatality_df = get_dataframe(fatality_data_file)
 
         disability_data_file = '{}/dr_table{}.csv'.format(data_dir, scenario_suffix)
-        disability_df = get_dataframe(fatality_data_file)
+        disability_df = get_dataframe(disability_data_file)
 
         cost_data_file = '{}/popcost_table{}.csv'.format(data_dir, scenario_suffix)
         cost_df = get_dataframe(cost_data_file)
