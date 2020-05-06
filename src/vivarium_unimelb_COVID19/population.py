@@ -188,16 +188,8 @@ class MortalityEffects:
 
 
     def mortality_rate_adjustment(self, index, mort_rate):
-        mort_delta = self.mort_effects_table(index)
-
-        #Scale mort_rate from annual to timestep
-        old_rate = mort_rate * self.years_per_timestep
-        print(old_rate)
-        #Add mort delta
-        new_rate = old_rate + mort_delta
-        print(new_rate)
-        #Scale new_rate from timestep to annual
-        new_rate = new_rate / self.years_per_timestep
+        mort_scale = self.mort_effects_table(index)
+        new_rate = mort_rate * mort_scale
 
         return new_rate
 
