@@ -26,7 +26,7 @@ output_df = pd.DataFrame(columns = cols)
 for country in countries:
     for scenario in scenarios:
         #Expected vals
-        input_file = '{}\COVID19_{}_{}_mm.csv'.format(country, country, scenario)
+        input_file = '{}/COVID19_{}_{}_mm.csv'.format(country, country, scenario)
         print('Processing input:'+input_file)
         df = pd.read_csv(input_file)
         df = df.drop(columns='year_of_birth').set_index(['age','sex','date'])
@@ -40,7 +40,7 @@ for country in countries:
 
         #draws
         for draw in range(1, draws+1):
-            input_file = '{}\COVID19_{}_{}_mm_{}.csv'.format(country, country, scenario, draw)
+            input_file = '{}/COVID19_{}_{}_mm_{}.csv'.format(country, country, scenario, draw)
             print('Processing input:'+input_file)
             df = pd.read_csv(input_file)
             df = df.drop(columns='year_of_birth').set_index(['age','sex','date'])
