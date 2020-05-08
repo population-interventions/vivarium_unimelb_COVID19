@@ -30,7 +30,7 @@ def create_model_specifications(output_dir):
     scenarios = ['flatten', 'elimination', 'suppress',
                  'elimination_asymp', 'flatten_asymp', 'suppress_asymp',
                  'elimination_verity', 'flatten_verity', 'suppress_verity',
-                 'suppress_2point5inf', 'suppress_5inf', 'flatten_60inf']
+                 'suppress_0point5inf', 'suppress_5inf', 'flatten_60inf']
 
     template_file = get_model_specification_template_file()
     BAU_template_file = get_model_specification_BAU_template_file()
