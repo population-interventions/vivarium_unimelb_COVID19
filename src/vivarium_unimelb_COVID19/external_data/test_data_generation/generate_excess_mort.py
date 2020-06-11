@@ -32,7 +32,7 @@ age_bins = 22
 mort_effect_val = 1.1
 
 effect_start_timestep = 3
-effect_end_timestep = 8
+effect_end_timestep = 14
 
 timesteps = ((end_date-start_date)/timestep).days
 

@@ -23,10 +23,14 @@ class Epidemic:
     def __init__(self, data_dir, year_start):
         self.year_start = year_start
 
-        scenario_suffix = ''
+        #scenario_suffix = ''
         #scenario_suffix = '_asymp'
         #scenario_suffix = '_verity'
         #scenario_suffix = '_misc'
+        #scenario_suffix = '_24m'
+        scenario_suffix = '_36m'
+        #scenario_suffix = '_doubledr'
+        #scenario_suffix = '_halfifr'
 
         infection_data_file = '{}/percent_infected{}.csv'.format(data_dir, scenario_suffix)
         infection_df = get_dataframe(infection_data_file)

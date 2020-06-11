@@ -21,12 +21,17 @@ SIMULATION_YEAR_START = 2020
 RANDOM_SEED = 49430
 
 #POPULATIONS = ['new_zealand_test']
-POPULATIONS = ['australia','new_zealand','sweden']
+#POPULATIONS = ['australia','new_zealand','sweden']
+POPULATIONS = ['australia','new_zealand']
 ACUTE_DISEASES = ['RTC', 'SelfHarm']
-SCENARIOS = ['elimination', 'flatten', 'suppress']
+#SCENARIOS = ['elimination', 'flatten', 'suppress']
 #SCENARIOS = ['elimination_asymp', 'flatten_asymp', 'suppress_asymp']
 #SCENARIOS = ['elimination_verity', 'flatten_verity', 'suppress_verity']
 #SCENARIOS = ['suppress_0point5inf', 'suppress_5inf', 'flatten_60inf']
+#SCENARIOS = ['elimination_24m', 'flatten_24m', 'suppress_24m']
+SCENARIOS = ['elimination_36m', 'flatten_36m', 'suppress_36m']
+#SCENARIOS = ['elimination_doubledr', 'flatten_doubledr', 'suppress_doubledr']
+#SCENARIOS = ['elimination_halfifr', 'flatten_halfifr', 'suppress_halfifr']
 
 
 def check_for_bin_edges(df):
