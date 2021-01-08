@@ -9,6 +9,7 @@ multi-state lifetable simulations.
 """
 import numpy as np
 import pandas as pd
+import os
 
 from datetime import datetime
 
@@ -44,6 +45,19 @@ def output_file(config, suffix, sep='_', ext='csv'):
         out_file += '{}{}'.format(sep, draw)
     out_file += '.{}'.format(ext)
     return out_file
+
+
+def output_csv_mkdir(data, path, idx):
+    """
+    Wrapper for pandas .to_csv() method to create directory for path if it
+    doesn't already exist.
+    """
+    out_folder = os.path.dirname(path)
+
+    if not os.path.exists(out_folder):
+        os.mkdir(out_folder)
+
+    data.to_csv(path, index=idx)
 
 
 class MorbidityMortality:
@@ -186,7 +200,7 @@ class MorbidityMortality:
         #data['HALE'] = self.calculate_LE(data, 'HALY', 'prev_population')
         #data['bau_HALE'] = self.calculate_LE(data, 'bau_HALY',
         #                                   'bau_prev_population')
-        data.to_csv(self.output_file, index=False)
+        output_csv_mkdir(data, self.output_file, idx=False)
 
 class EpidemicMortality:
     """
@@ -270,4 +284,4 @@ class EpidemicMortality:
         cols = ['year_of_birth'] + self.output_table_cols
         data = data[cols]
 
-        data.to_csv(self.output_file, index=False)
+        output_csv_mkdir(data, self.output_file, idx=False)
