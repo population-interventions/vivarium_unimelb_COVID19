@@ -1,4 +1,4 @@
-vivarium==0.9.1
+vivarium
 numpy
 tables
 pandas

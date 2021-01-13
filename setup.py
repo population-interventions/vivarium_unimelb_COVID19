@@ -17,7 +17,7 @@ if __name__ == "__main__":
     #    long_description = f.read()
 
     install_requirements = [
-        'vivarium==0.9.1',
+        'vivarium',
         #vivarium_public_health 0.10.4 contains bugs. These should be fixed in the next release, 
         #although they shouldn't affect COVID sims
 
