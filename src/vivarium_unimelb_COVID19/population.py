@@ -11,9 +11,6 @@ import numpy as np
 
 from datetime import date
 
-from vivarium_public_health import utilities
-
-
 class BasePopulation:
     """
     This component implements the core population demographics: age, sex,
