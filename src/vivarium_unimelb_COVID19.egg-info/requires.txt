@@ -1,8 +1,7 @@
-vivarium==0.9.3
-vivarium_public_health==0.10.4
-numpy<=1.15.4
-tables<=3.4
-pandas<0.25
+vivarium
+numpy
+tables
+pandas
 scipy
 jinja2
 click

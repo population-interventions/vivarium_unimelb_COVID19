@@ -17,15 +17,14 @@ if __name__ == "__main__":
     #    long_description = f.read()
 
     install_requirements = [
-        'vivarium==0.9.3',
+        'vivarium',
         #vivarium_public_health 0.10.4 contains bugs. These should be fixed in the next release, 
         #although they shouldn't affect COVID sims
-        'vivarium_public_health==0.10.4', 
 
         # These are pinned for internal dependencies on IHME libraries
-        'numpy<=1.15.4',
-        'tables<=3.3',
-        'pandas<0.25',
+        'numpy',
+        'tables',
+        'pandas',
         
         'scipy',
         'jinja2',
