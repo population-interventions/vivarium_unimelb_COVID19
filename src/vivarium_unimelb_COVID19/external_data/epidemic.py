@@ -7,7 +7,7 @@ import pathlib
 from datetime import datetime
 
 #Includes draw 0
-DRAW_NUM = 1
+DRAW_NUM = 10
 
 #from .uncertainty import sample_fixed_rate_from
 
@@ -23,12 +23,12 @@ class Epidemic:
     def __init__(self, data_dir, year_start):
         self.year_start = year_start
 
-        #scenario_suffix = ''
+        scenario_suffix = ''
         #scenario_suffix = '_asymp'
         #scenario_suffix = '_verity'
         #scenario_suffix = '_misc'
         #scenario_suffix = '_24m'
-        scenario_suffix = '_36m'
+        #scenario_suffix = '_36m'
         #scenario_suffix = '_doubledr'
         #scenario_suffix = '_halfifr'
 

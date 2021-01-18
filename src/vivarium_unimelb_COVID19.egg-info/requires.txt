@@ -1,7 +1,8 @@
 vivarium==0.9.3
 vivarium_public_health==0.10.4
 numpy<=1.15.4
-tables<=3.4
+numexpr==2.7.1
+tables<=3.3
 pandas<0.25
 scipy
 jinja2
